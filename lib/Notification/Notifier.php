@@ -563,7 +563,7 @@ class Notifier implements INotifier {
 			if ($user instanceof IUser) {
 				if ($this->notificationManager->isPreparingPushNotification() || $room->hasSessionsInCall()) {
 					$notification = $this->addActionButton($notification, $l->t('Answer call'));
-					$subject = $l->t('{user} wants to talk with you');
+					$subject = $l->t('{user} would like to talk with you');
 				} else {
 					$notification = $this->addActionButton($notification, $l->t('Call back'));
 					$subject = $l->t('You missed a call from {user}');
