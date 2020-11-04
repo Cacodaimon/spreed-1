@@ -329,7 +329,7 @@ class ParticipantService {
 			$this->sessionMapper->delete($session);
 
 			if ($dispatchLeaveCallEvents) {
-				$this->dispatcher->dispatch(Room::EVENT_BEFORE_SESSION_LEAVE_CALL, $event);
+				$this->dispatcher->dispatch(Room::EVENT_AFTER_SESSION_LEAVE_CALL, $event);
 			}
 		} else {
 			$this->sessionMapper->deleteByAttendeeId($participant->getAttendee()->getId());
