@@ -63,6 +63,7 @@ export default {
 		 */
 		async update(fileInfo) {
 			this.fileInfo = fileInfo
+			OCA.Talk.fileInfo = fileInfo
 		},
 	},
 }
