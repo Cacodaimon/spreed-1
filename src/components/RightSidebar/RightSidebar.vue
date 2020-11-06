@@ -28,9 +28,14 @@
 		:starred="isFavorited"
 		:title-editable="canModerate && isRenamingConversation"
 		:class="'active-tab-' + activeTab"
+		:has-description="true"
+		:description="description"
+		:is-editing-description="isEditingDescription"
 		@update:active="handleUpdateActive"
 		@update:starred="onFavoriteChange"
 		@update:title="handleUpdateTitle"
+		@submit:description="handleUpdateDescription"
+		@update:isEditingDescription="handleEditDescription"
 		@submit-title="handleSubmitTitle"
 		@dismiss-editing="dismissEditing"
 		@close="handleClose">
@@ -120,6 +125,8 @@ export default {
 			// Sidebar status before starting editing operation
 			sidebarOpenBeforeEditingName: '',
 			matterbridgeEnabled: loadState('talk', 'enable_matterbridge'),
+			description: 'sdfjkhsdkj fhs dfkjhsdfkjhs dfkjas dh fkjsdfhkasdjfhdk ajfhsd kjfhsdkfj hsdkfjhdsfkjsdhfkjsdhf',
+			isEditingDescription: false,
 		}
 	},
 
@@ -247,6 +254,19 @@ export default {
 
 		showSettings() {
 			EventBus.$emit('show-settings', true)
+		},
+
+		handleUpdateDescription(payload) {
+			setTimeout(() => {
+				console.debug('payload', payload, 'waiting one second')
+			}, 1000)
+			this.description = payload
+			this.isEditingDescription = false
+		},
+
+		handleEditDescription(payload) {
+			console.debug(payload)
+			this.isEditingDescription = payload
 		},
 
 	},

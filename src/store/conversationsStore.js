@@ -270,6 +270,11 @@ const actions = {
 
 		commit('addConversation', conversation)
 	},
+
+	setConversationDescription({ commit, getters }, token, description) {
+		console.debug(description)
+		commit('setConversationDescription', { token, description })
+	},
 }
 
 export default { state, mutations, getters, actions }

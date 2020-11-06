@@ -42,7 +42,7 @@ module.exports = {
 				test: /\.vue$/,
 				loader: 'vue-loader',
 				exclude: babelLoaderExcludeNodeModulesExcept([
-					'vue-material-design-icons',
+					'vue-material-design-icons', '@nextcloud/vue',
 				]),
 			},
 			{
