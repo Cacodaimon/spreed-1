@@ -20,51 +20,50 @@
 -->
 
 <template>
-	<ul>
+	<div class="placeholder-main">
 		<!-- Placeholder animation -->
-		<svg class="placeholder-gradient">
+		<svg class="placeholder-gradient placeholder-gradient-regular">
 			<defs>
-				<linearGradient id="placeholder-gradient">
-					<stop offset="0%" :stop-color="light">
-						<animate attributeName="stop-color"
-							:values="`${light}; ${light}; ${dark}; ${dark}; ${light}`"
-							dur="2s"
-							repeatCount="indefinite" />
-					</stop>
-					<stop offset="100%" :stop-color="dark">
-						<animate attributeName="stop-color"
-							:values="`${dark}; ${light}; ${light}; ${dark}; ${dark}`"
-							dur="2s"
-							repeatCount="indefinite" />
-					</stop>
+				<linearGradient id="placeholder-gradient-regular">
+					<stop offset="0%" :stop-color="light" />
+					<stop offset="100%" :stop-color="dark" />
+				</linearGradient>
+			</defs>
+		</svg>
+		<svg class="placeholder-gradient placeholder-gradient-reverse">
+			<defs>
+				<linearGradient id="placeholder-gradient-reverse">
+					<stop offset="0%" :stop-color="dark" />
+					<stop offset="100%" :stop-color="light" />
 				</linearGradient>
 			</defs>
 		</svg>
 
-		<!-- Placeholders -->
-		<li v-for="placeholder in count" :key="placeholder">
-			<svg
-				v-if="type === 'conversations'"
-				class="conversation-placeholder"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="url(#placeholder-gradient)">
-				<circle class="conversation-placeholder-icon" />
-				<rect class="conversation-placeholder-line-one" />
-				<rect class="conversation-placeholder-line-two" :style="{width: `calc(${randWidth()}%)`}" />
-			</svg>
-			<svg
-				v-if="type === 'messages'"
-				class="message-placeholder"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="url(#placeholder-gradient)">
-				<circle class="message-placeholder-icon" />
-				<rect class="message-placeholder-line-one" />
-				<rect class="message-placeholder-line-two" />
-				<rect class="message-placeholder-line-three" />
-				<rect class="message-placeholder-line-four" :style="{width: `calc(${randWidth()}%)`}" />
-			</svg>
-		</li>
-	</ul>
+		<ul v-for="suffix in ['-regular', '-reverse']" :key="suffix" :class="'placeholder-list placeholder-list' + suffix">
+			<li v-for="(width, index) in placeholderData" :key="'placeholder' + suffix + index">
+				<svg
+					v-if="type === 'conversations'"
+					class="conversation-placeholder"
+					xmlns="http://www.w3.org/2000/svg"
+					:fill="'url(#placeholder-gradient' + suffix + ')'">
+					<circle class="conversation-placeholder-icon" />
+					<rect class="conversation-placeholder-line-one" />
+					<rect class="conversation-placeholder-line-two" :style="{width: `width`}" />
+				</svg>
+				<svg
+					v-if="type === 'messages'"
+					class="message-placeholder"
+					xmlns="http://www.w3.org/2000/svg"
+					:fill="'url(#placeholder-gradient' + suffix + ')'">
+					<circle class="message-placeholder-icon" />
+					<rect class="message-placeholder-line-one" />
+					<rect class="message-placeholder-line-two" />
+					<rect class="message-placeholder-line-three" />
+					<rect class="message-placeholder-line-four" :style="{width: `width`}" />
+				</svg>
+			</li>
+		</ul>
+	</div>
 </template>
 
 <script>
@@ -89,16 +88,21 @@ export default {
 		}
 	},
 
+	computed: {
+		placeholderData() {
+			const data = []
+			for (let i = 0; i < this.count; i++) {
+				// generate random widths
+				data.push(Math.floor(Math.random() * 20) + 30)
+			}
+			return data
+		},
+	},
+
 	mounted() {
 		const styles = getComputedStyle(document.documentElement)
 		this.dark = styles.getPropertyValue('--color-placeholder-dark')
 		this.light = styles.getPropertyValue('--color-placeholder-light')
-	},
-
-	methods: {
-		randWidth() {
-			return Math.floor(Math.random() * 20) + 30
-		},
 	},
 }
 </script>
@@ -107,9 +111,24 @@ export default {
 	$clickable-area: 44px;
 	$margin: 8px;
 
-	ul {
+	.placeholder-main {
 		width: 100%;
 		position: relative;
+	}
+
+	.placeholder-list {
+		position: absolute;
+		translate: translateZ(0);
+	}
+
+	.placeholder-list-regular {
+		animation: pulse 2s;
+		animation-iteration-count: infinite;
+	}
+
+	.placeholder-list-reverse {
+		animation: pulse-reverse 2s;
+		animation-iteration-count: infinite;
 	}
 
 	.placeholder-gradient {
@@ -184,6 +203,30 @@ export default {
 
 		&-line-four {
 			y: 65px;
+		}
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+
+	@keyframes pulse-reverse {
+		0% {
+			opacity: 0;
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
 		}
 	}
 
