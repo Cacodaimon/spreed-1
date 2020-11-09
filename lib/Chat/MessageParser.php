@@ -66,8 +66,16 @@ class MessageParser {
 		return new Message($room, $participant, $comment, $l);
 	}
 
-	public function parseMessage(Message $message): void {
+	public function parseMessage(Message $message, bool $purgeMarkdown = true): void {
 		$message->setMessage($message->getComment()->getMessage(), []);
+
+        if ($purgeMarkdown) {
+            if (empty($this->markdownRemover)) {
+                $this->markdownRemover = new \UnMarkdown\MarkdownRemover();
+            }
+            $message->setMessage($this->markdownRemover->strip($message->getMessage()), []);
+        }
+
 		$message->setMessageType($message->getComment()->getVerb());
 		$this->setActor($message);
 
