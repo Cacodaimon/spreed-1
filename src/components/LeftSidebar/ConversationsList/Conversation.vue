@@ -98,6 +98,10 @@
 </template>
 
 <script>
+import unified from 'unified'
+import markdown from 'remark-parse'
+import stripMarkdown from 'strip-markdown'
+import remarkStringify from 'remark-stringify'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import ActionSeparator from '@nextcloud/vue/dist/Components/ActionSeparator'
@@ -265,8 +269,15 @@ export default {
 			Object.keys(params).forEach((parameterKey) => {
 				subtitle = subtitle.replace('{' + parameterKey + '}', params[parameterKey].name)
 			})
+			const shortMessage = unified()
+				.use(markdown)
+				.use(stripMarkdown)
+				.use(remarkStringify)  // TODO fix http://example.com becomes http&#x3A;//example.com
+				.processSync(subtitle)
+				.contents
+				.trim()
 
-			return subtitle
+			return shortMessage || '…' // fall back to horizontal ellipsis if removed markdown results in empty content
 		},
 
 		/**
