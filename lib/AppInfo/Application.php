@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace OCA\Talk\AppInfo;
 
+use Exception;
 use OCA\Files_Sharing\Event\BeforeTemplateRenderedEvent;
 use OCA\Talk\Activity\Listener as ActivityListener;
 use OCA\Talk\Capabilities;
@@ -85,6 +86,10 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function register(IRegistrationContext $context): void {
+        if ((@include_once __DIR__ . '/../../vendor/autoload.php') === false) {
+            throw new Exception('Cannot include autoload. Did you run install dependencies using composer?');
+        }
+
 		$context->registerMiddleWare(CanUseTalkMiddleware::class);
 		$context->registerMiddleWare(InjectionMiddleware::class);
 		$context->registerCapability(Capabilities::class);
