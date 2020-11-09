@@ -9,6 +9,9 @@
 		"psalm:fix": "psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
 	},
 	"minimum-stability": "dev",
+	"require": {
+		"caco/un-markdown": "^0.0.1"
+	},
 	"require-dev": {
 		"nextcloud/coding-standard": "^0.3.0",
 		"vimeo/psalm": "^3.16",
