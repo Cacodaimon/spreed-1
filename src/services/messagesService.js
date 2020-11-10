@@ -36,6 +36,7 @@ const fetchMessages = async function({ token, lastKnownMessageId, includeLastKno
 			lookIntoFuture: 0,
 			lastKnownMessageId,
 			includeLastKnown: includeLastKnown || 0,
+		    purgeMarkdown: 0,
 		},
 	}))
 	return response
@@ -55,6 +56,7 @@ const lookForNewMessages = async({ token, lastKnownMessageId }, options) => {
 			lookIntoFuture: 1,
 			lastKnownMessageId,
 			includeLastKnown: 0,
+		    purgeMarkdown: 0,
 		},
 	}))
 	return response
@@ -70,7 +72,7 @@ const lookForNewMessages = async({ token, lastKnownMessageId }, options) => {
  * @param {Number} parent The id of the message to be replied to
  */
 const postNewMessage = async function({ token, message, actorDisplayName, referenceId, parent }) {
-	const response = await axios.post(generateOcsUrl('apps/spreed/api/v1/chat', 2) + token, { message, actorDisplayName, referenceId, replyTo: parent })
+	const response = await axios.post(generateOcsUrl('apps/spreed/api/v1/chat', 2) + token, { message, actorDisplayName, referenceId, replyTo: parent, purgeMarkdown: 0 })
 	return response
 }
 

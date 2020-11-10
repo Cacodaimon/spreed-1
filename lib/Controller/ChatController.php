@@ -159,11 +159,12 @@ class ChatController extends AEnvironmentAwareController {
 	 * @param string $actorDisplayName for guests
 	 * @param string $referenceId for the message to be able to later identify it again
 	 * @param int $replyTo Parent id which this message is a reply to
+     * @param int $purgeMarkdown Remove markdown formatting from response when (1) (default 1)
 	 * @return DataResponse the status code is "201 Created" if successful, and
 	 *         "404 Not found" if the room or session for a guest user was not
 	 *         found".
 	 */
-	public function sendMessage(string $message, string $actorDisplayName = '', string $referenceId = '', int $replyTo = 0): DataResponse {
+	public function sendMessage(string $message, string $actorDisplayName = '', string $referenceId = '', int $replyTo = 0, int $purgeMarkdown = 1): DataResponse {
 		if ($this->userId === null) {
 			$actorType = 'guests';
 			$sessionId = $this->session->getSessionForRoom($this->room->getToken());
@@ -196,7 +197,7 @@ class ChatController extends AEnvironmentAwareController {
 			}
 
 			$parentMessage = $this->messageParser->createMessage($this->room, $this->participant, $parent, $this->l);
-			$this->messageParser->parseMessage($parentMessage);
+			$this->messageParser->parseMessage($parentMessage, (bool) $purgeMarkdown);
 			if (!$parentMessage->isReplyable()) {
 				return new DataResponse([], Http::STATUS_BAD_REQUEST);
 			}
@@ -214,7 +215,7 @@ class ChatController extends AEnvironmentAwareController {
 		}
 
 		$chatMessage = $this->messageParser->createMessage($this->room, $this->participant, $comment, $this->l);
-		$this->messageParser->parseMessage($chatMessage);
+		$this->messageParser->parseMessage($chatMessage, (bool) $purgeMarkdown);
 
 		if (!$chatMessage->getVisibility()) {
 			return new DataResponse([], Http::STATUS_CREATED);
@@ -270,6 +271,7 @@ class ChatController extends AEnvironmentAwareController {
 	 *                           if your client does this itself via chat/{token}/read set to 0
 	 * @param int $includeLastKnown Include the $lastKnownMessageId in the messages when 1 (default 0)
 	 * @param int $noStatusUpdate When the user status should not be automatically set to online set to 1 (default 0)
+     * @param int $purgeMarkdown Remove markdown formatting from response when (1) (default 1)
 	 * @return DataResponse an array of chat messages, "404 Not found" if the
 	 *         room token was not valid or "304 Not modified" if there were no messages;
 	 *         each chat message is an array with
@@ -277,7 +279,7 @@ class ChatController extends AEnvironmentAwareController {
 	 *         'actorDisplayName', 'timestamp' (in seconds and UTC timezone) and
 	 *         'message'.
 	 */
-	public function receiveMessages(int $lookIntoFuture, int $limit = 100, int $lastKnownMessageId = 0, int $timeout = 30, int $setReadMarker = 1, int $includeLastKnown = 0, int $noStatusUpdate = 0): DataResponse {
+	public function receiveMessages(int $lookIntoFuture, int $limit = 100, int $lastKnownMessageId = 0, int $timeout = 30, int $setReadMarker = 1, int $includeLastKnown = 0, int $noStatusUpdate = 0, int $purgeMarkdown = 1): DataResponse {
 		$limit = min(200, $limit);
 		$timeout = min(30, $timeout);
 
@@ -340,7 +342,7 @@ class ChatController extends AEnvironmentAwareController {
 		foreach ($comments as $comment) {
 			$id = (int) $comment->getId();
 			$message = $this->messageParser->createMessage($this->room, $this->participant, $comment, $this->l);
-			$this->messageParser->parseMessage($message);
+			$this->messageParser->parseMessage($message, (bool)$purgeMarkdown);
 
 			if (!$message->getVisibility()) {
 				$commentIdToIndex[$id] = null;
@@ -384,7 +386,7 @@ class ChatController extends AEnvironmentAwareController {
 				try {
 					$comment = $this->chatManager->getParentComment($this->room, $parentId);
 					$message = $this->messageParser->createMessage($this->room, $this->participant, $comment, $this->l);
-					$this->messageParser->parseMessage($message);
+					$this->messageParser->parseMessage($message, (bool)$purgeMarkdown);
 
 					if ($message->getVisibility()) {
 						$loadedParents[$parentId] = $message->toArray();
