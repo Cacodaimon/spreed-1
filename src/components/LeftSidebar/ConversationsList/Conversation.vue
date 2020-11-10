@@ -98,6 +98,11 @@
 </template>
 
 <script>
+import unified from 'unified'
+import markdown from 'remark-parse'
+import stripMarkdown from 'strip-markdown'
+import remarkStringify from 'remark-stringify'
+import remarkDisableTokenizers from 'remark-disable-tokenizers'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import ActionButton from '@nextcloud/vue/dist/Components/ActionButton'
 import ActionSeparator from '@nextcloud/vue/dist/Components/ActionSeparator'
@@ -266,7 +271,17 @@ export default {
 				subtitle = subtitle.replace('{' + parameterKey + '}', params[parameterKey].name)
 			})
 
-			return subtitle
+			const shortMessage = unified()
+				.use(markdown)
+				.use(remarkDisableTokenizers, { inline: ['url', 'autoLink', 'link', 'html'] })
+				.use(stripMarkdown, { escape: false })
+				.use(remarkStringify)
+				.processSync(subtitle)
+				.contents
+				.trim()
+				.replace('&#x3A;', ':') // https://github.com/remarkjs/strip-markdown/issues/13
+
+			return shortMessage || '…' // in case all content has been stripped return something
 		},
 
 		/**
