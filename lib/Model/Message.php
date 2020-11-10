@@ -27,6 +27,7 @@ use OCA\Talk\Participant;
 use OCA\Talk\Room;
 use OCP\Comments\IComment;
 use OCP\IL10N;
+use UnMarkdown\MarkdownRemover;
 
 class Message {
 
@@ -169,7 +170,8 @@ class Message {
 			'actorId' => $this->getActorId(),
 			'actorDisplayName' => $this->getActorDisplayName(),
 			'timestamp' => $this->getComment()->getCreationDateTime()->getTimestamp(),
-			'message' => $this->getMessage(),
+			'message' => (new MarkdownRemover)->strip($this->getMessage()),
+            'markdownMessage' => $this->getMessage(),
 			'messageParameters' => $this->getMessageParameters(),
 			'systemMessage' => $this->getMessageType() === 'system' ? $this->getMessageRaw() : '',
 			'messageType' => $this->getMessageType(),
