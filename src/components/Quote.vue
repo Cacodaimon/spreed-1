@@ -37,11 +37,15 @@ components.
 				<RichText
 					:text="message"
 					:arguments="richParameters"
-					:autolink="true" />
+					:autolink="true"
+					:use-markdown="true" />
 			</div>
 			<blockquote v-else
 				class="quote__main__text">
-				<p>{{ shortenedQuoteMessage }}</p>
+				<RichText :text="shortenedQuoteMessage"
+					:arguments="richParameters"
+					:autolink="true"
+					:use-markdown="true" />
 			</blockquote>
 		</div>
 		<div v-if="isNewMessageFormQuote" class="quote__main__right">
@@ -228,6 +232,10 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+@import 'node_modules/@juliushaertl/vue-richtext/dist/vue-richtext';
+</style>
 
 <style lang="scss" scoped>
 
