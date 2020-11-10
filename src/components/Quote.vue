@@ -35,13 +35,17 @@ components.
 			<div v-if="isFileShareMessage"
 				class="quote__main__text">
 				<RichText
-					:text="message"
+					:text="markdownMessage || message"
 					:arguments="richParameters"
-					:autolink="true" />
+					:autolink="true"
+					:use-markdown="true" />
 			</div>
 			<blockquote v-else
 				class="quote__main__text">
-				<p>{{ shortenedQuoteMessage }}</p>
+				<RichText :text="shortenedQuoteMessage"
+					:arguments="richParameters"
+					:autolink="true"
+					:use-markdown="true" />
 			</blockquote>
 		</div>
 		<div v-if="isNewMessageFormQuote" class="quote__main__right">
@@ -87,6 +91,13 @@ export default {
 		message: {
 			type: String,
 			required: true,
+		},
+		/**
+		 * The message or quote text.
+		 */
+		markdownMessage: {
+			type: String,
+			default: '',
 		},
 		/**
 		 * The text of the message to be replied to.
@@ -179,11 +190,11 @@ export default {
 		 */
 		simpleQuotedMessage() {
 			if (!Object.keys(this.messageParameters).length) {
-				return this.message
+				return this.markdownMessage || this.message
 			}
 
 			const params = this.messageParameters
-			let subtitle = this.message
+			let subtitle = this.markdownMessage || this.message
 
 			// We don't really use rich objects in the subtitle, instead we fall back to the name of the item
 			Object.keys(params).forEach((parameterKey) => {
@@ -228,6 +239,14 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+@import 'node_modules/@juliushaertl/vue-richtext/dist/vue-richtext';
+
+.rich-text--wrapper {
+	white-space: initial !important;
+}
+</style>
 
 <style lang="scss" scoped>
 

@@ -45,12 +45,20 @@ the main body of the message as well as a quote.
 				</div>
 			</div>
 			<div v-else-if="showJoinCallButton" class="message__main__text call-started">
-				<RichText :text="message" :arguments="richParameters" :autolink="true" />
+				<RichText
+					:text="markdownMessage || message"
+					:arguments="richParameters"
+					:autolink="true"
+					:use-markdown="true" />
 				<CallButton />
 			</div>
 			<div v-else class="message__main__text" :class="{'system-message': isSystemMessage}">
 				<Quote v-if="parent" :parent-id="parent" v-bind="quote" />
-				<RichText :text="message" :arguments="richParameters" :autolink="true" />
+				<RichText
+					:text="markdownMessage || message"
+					:arguments="richParameters"
+					:autolink="true"
+					:use-markdown="true" />
 			</div>
 			<div class="message__main__right">
 				<div v-if="isTemporary && !isTemporaryUpload" class="icon-loading-small" />
@@ -133,6 +141,13 @@ export default {
 		message: {
 			type: String,
 			required: true,
+		},
+		/**
+		 * The message or quote text.
+		 */
+		markdownMessage: {
+			type: String,
+			default: '',
 		},
 		/**
 		 * The parameters of the rich object message
@@ -360,6 +375,14 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss">
+@import '~@juliushaertl/vue-richtext/dist/vue-richtext';
+
+.rich-text--wrapper {
+	white-space: initial !important;
+}
+</style>
 
 <style lang="scss" scoped>
 @import '../../../../assets/variables';
